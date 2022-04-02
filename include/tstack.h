@@ -1,39 +1,28 @@
-#ifndef INCLUDE_TSTACK_H_
-#define INCLUDE_TSTACK_H_
-const int size = 100;
-template<typename T, int size>
-class TStack {
-private:
-    T arr[size];
-		int top = -1;
-public:
-	TStack():top(-1) {}
-	bool isEmpty() {
-		return top == -1;
-	}
-	bool isFull() {
-		return top == size - 1;
-	}
-	void push(T& value) {
-		if (!isFull()) {
-			arr[++top] = value;
-		else
-			throw "Full!";
-		}
-	}
-	T get() {
-		if (!isEmpty())
-			return arr[top];
-		else
-			throw "Empty!";
-	}
-	void pop() {
-		if (!isEmpty())
-			--top;
-		else
-			throw "Empty!";
-	}
-	int getSize() {
-		return top + 1;
-	}
+const int size=100;
+
+template<typename type>
+class TStack
+{
+   private:
+     type arr[size];
+     int top;
+   public:
+     TStack():top(-1) { }
+     type get() const { 
+        return arr[top];
+     }
+     bool isEmpty() const {
+        return top==-1;
+     }
+     bool isFull() const {
+        return top==size-1;
+     }
+     void pop() {
+        if(top>=0)
+          top--;
+     }
+     void push(type item) {
+       if(top<size-1)
+         arr[++top]=item;
+     }
 };
