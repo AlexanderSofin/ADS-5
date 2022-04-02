@@ -19,7 +19,6 @@ void razdel(char sim, std::string* str) {
   *str += sim;
   *str += ' ';
 }
-
 int Calc(int a, int b, char c) {
   switch (c) {
     case '+':
