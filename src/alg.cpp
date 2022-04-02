@@ -5,13 +5,13 @@
 using namespace std;
 int prior(char ch) {
     switch (ch) {
-    case '(': return 0;
-    case ')': return 1;
-    case '+': return 2;
-    case '-': return 2;
-    case '*': return 3;
-    case '/': return 3;
-    default: return -1;
+        case '(': return 0;
+        case ')': return 1;
+        case '+': return 2;
+        case '-': return 2;
+        case '*': return 3;
+        case '/': return 3;
+        default: return -1;
     }
 }
 string infx2pstfx(string inf) {
@@ -22,7 +22,7 @@ string infx2pstfx(string inf) {
         int k = prior(ch);
         if (k == -1)
             tmp.append(string(1, ch));
-        else
+        else {
             if (stack1.isEmpty() || k == 0 || k > prior(stack1.get()))
                 stack1.push(ch);
             else {
@@ -32,7 +32,6 @@ string infx2pstfx(string inf) {
                         stack1.pop();
                         if (sym != '(')
                             tmp.append(string(1, sym));
-                      
                         else
                             break;
                     }
