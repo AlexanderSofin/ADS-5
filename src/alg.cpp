@@ -1,103 +1,113 @@
-#include <iostream>
+#include <string>
+#include <map>
 #include "tstack.h"
-using namespace std;
 
-int prior(char ch)
-{
-    switch (ch)
-    {
-    case '(': return 0;
-    case ')': return 1;
-    case '+': return 2;
-    case '-': return 2;
-    case '*': return 3;
-    case '/': return 3;
-    default: return -1;
-    }
+
+int getPrior(char sim) {
+  switch (sim) {
+    case '(':
+      return 0;
+    case ')':
+      return 1;
+    case '+':
+      return 2;
+    case '-':
+      return 2;
+    case '*':
+      return 3;
+    case '/':
+      return 3;
+    case ' ':
+      return -2;
+    default:
+      return -1;
+  }
 }
 
-string infx2pstfx(string inf)
-{
-    TStack<char> stack1;
-    string tmp = "";
-    for (int i = 0; i < inf.size(); i++)
-    {
-        char ch = inf[i];
-        int k = prior(ch);
-
-        if (k == -1)
-            tmp.append(string(1, ch));
-        else
-            if (stack1.isEmpty() || k == 0 || k > prior(stack1.get()))
-                stack1.push(ch);
-            else
-            {
-                if (ch == ')')
-                    while (true)
-                    {
-                        char sym = stack1.get();
-                        stack1.pop();
-                        if (sym != '(')
-                            tmp.append(string(1, sym));
-                        else
-                            break;
-                    }
-                else
-                {
-                    while (!stack1.isEmpty())
-                    {
-                        char lastStackEl = stack1.get();
-                        stack1.pop();
-                        if (prior(lastStackEl) >= k)
-                            tmp.append(string(1, lastStackEl));
-                    }
-                    stack1.push(ch);
-                }
-            }
-    }
-    while (!stack1.isEmpty())
-    {
-        char lastStackEl = stack1.get();
-        stack1.pop();
-        tmp.append(string(1, lastStackEl));
-    }
-    return tmp;
+void razdel(char sim, std::string* str) {
+  *str += sim;
+  *str += ' ';
 }
 
-int excute_calc(int k1, int k2, char pst)
-{
-    switch (pst)
-    {
-    case '+': return k1 + k2;
-    case '-': return k1 - k2;
-    case '*': return k1 * k2;
-    case '/': return k1 / k2;
-    default: return -1;
-    }
+int Calc(int a, int b, char c) {
+  switch (c) {
+    case '+':
+      return b + a;
+    case '-':
+      return b - a;
+    case '*':
+      return b * a;
+    case '/':
+      return b / a;
+    default:
+      throw "Error perform actions!";
+  }
 }
 
-int eval(string pst)
-{
-    TStack<int> stack2;
-    for (int i = 0; i < pst.size(); i++)
-    {
-        char ch = pst[i];
-        int priority = prior(ch);
-
-        if (priority == -1)
-            stack2.push(ch - 48);
-        else
-        {
-            int  k1 = stack2.get();
-            stack2.pop();
-
-            int k2 = stack2.get();
-            stack2.pop();
-
-            int res = excute_calc(k2, k1, ch);
-            stack2.push(res);
+std::string infx2pstfx(std::string inf) {
+  TStack<char, 128> stack1;
+  std::string res = "";
+  for (int i = 0; i < inf.length(); i++) {
+    if (getPrior(inf[i]) == -1) {
+      if (i < inf.length() && getPrior(inf[i + 1]) == -1) {
+        while (i < inf.length() && getPrior(inf[i]) == -1) {
+          res += inf[i];
+          i++;
         }
-
+        res += ' ';
+      } else {
+        razdel(inf[i], &res);
+      }
+      continue;
     }
-    return stack2.get();
+    if (stack1.isEmpty() || getPrior(inf[i]) == 0
+        || getPrior(inf[i]) > getPrior(stack1.get())) {
+      stack1.push(inf[i]);
+    } else {
+      if (getPrior(inf[i]) == 1) {
+        while (getPrior(stack1.get()) != 0) {
+          razdel(stack1.get(), &res);
+          stack1.pop();
+        }
+        stack1.pop();
+      } else if (getPrior(inf[i]) <= getPrior(stack1.get())) {
+        while (getPrior(stack1.get()) > 1) {
+          razdel(stack1.get(), &res);
+          stack1.pop();
+        }
+        stack1.push(inf[i]);
+      }
+    }
+  }
+  while (!stack1.isEmpty()) {
+    if (getPrior(stack1.get()) > 1) {
+      razdel(stack1.get(), &res);
+    }
+    stack1.pop();
+  }
+  res.pop_back();
+  return res;
+}
+int eval(std::string post) {
+  TStack<int, 100> stack2;
+  for (int i = 0; i < post.length(); i++) {
+    int r = i;
+    std::string temp = "";
+    while (getPrior(post[r]) == -1) {
+      temp += post[r];
+      r++;
+    }
+    i = r;
+    if (getPrior(post[i]) > 1) {
+      int a = stack2.get();
+      stack2.pop();
+      int b = stack2.get();
+      stack2.pop();
+      stack2.push(Calc(a, b, post[i]));
+    }
+    if (temp != "") {
+      stack2.push(std::stoi(temp));
+    }
+  }
+  return stack2.get();
 }
