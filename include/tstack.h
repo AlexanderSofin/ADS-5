@@ -5,10 +5,10 @@
 template<typename T, int size>
 class TStack {
 private:
-	Tarr[size]
-		int top = -1;
+	T arr[size];
+	int top = -1;
 public:
-	TStack() :top(-1) {}
+	TStack():top(-1) {}
 	bool isEmpty() {
 		return top == -1;
 	}
@@ -22,7 +22,7 @@ public:
 			throw "Full!";
 		}
 	}
-	T.get() {
+	T get() {
 		if (!isEmpty())
 			return arr[top];
 		else
